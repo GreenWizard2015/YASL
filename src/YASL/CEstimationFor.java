@@ -22,7 +22,7 @@ public class CEstimationFor<T> implements Comparable<CEstimationFor<T>> {
 			return 1;
 		if (delta < 0)
 			return -1;
-		return -((Comparable)Item).compareTo(o.Item);
+		return -((Comparable<T>)Item).compareTo(o.Item);
 	}
 
 	@SuppressWarnings("unchecked")
