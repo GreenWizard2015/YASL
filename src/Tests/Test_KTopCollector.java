@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import YASL.IEstimationCollector;
-import YASL.KTopCollector;
+import YASL.Collectors.KTopCollector;
 
 public class Test_KTopCollector {
 

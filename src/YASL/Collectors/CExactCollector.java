@@ -1,8 +1,12 @@
-package YASL;
+package YASL.Collectors;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import YASL.CEstimatedItems;
+import YASL.CEstimationFor;
+import YASL.IEstimationCollector;
 
 public class CExactCollector<T> implements IEstimationCollector<T> {
 

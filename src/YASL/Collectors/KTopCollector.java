@@ -1,8 +1,12 @@
-package YASL;
+package YASL.Collectors;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.stream.Collectors;
+
+import YASL.CEstimatedItems;
+import YASL.CEstimationFor;
+import YASL.IEstimationCollector;
 
 public class KTopCollector<T> implements IEstimationCollector<T> {
 	private final long															_K;
