@@ -1,5 +1,7 @@
 package YASL.Hashing;
 
+import java.nio.ByteBuffer;
+
 public class ChgCombined<T> implements IHashingGenerator<T> {
 	public interface ISalter<T> {
 		public T apply(T value, int round);
@@ -27,27 +29,51 @@ public class ChgCombined<T> implements IHashingGenerator<T> {
 	@Override
 	public IHasher<T> generate(int range, int levels) {
 		return x -> {
-			final int[] res = new int[levels];
-			int pos = populate(x, res, 0);
+			final int bytesPerItem = bytesIn(range);
+			final ByteBuffer res = populate(x, levels * bytesPerItem);
+			final int[] resArr = new int[levels];
+			for (int i = 0; i < levels; i++) {
+				switch (bytesPerItem) {
+					case 4:
+						resArr[i] = Math.abs(res.getInt() % range);
+						break;
 
-			int round = 0;
-			while (pos < levels) {
-				round++;
-				pos = populate(_salting.apply(x, round), res, pos);
+					case 2:
+						resArr[i] = Math.abs(res.getShort() % range);
+						break;
+
+					case 1:
+						resArr[i] = Math.abs(res.get() % range);
+						break;
+				}
 			}
-
-			for (int i = 0; i < res.length; i++)
-				res[i] = Math.abs(res[i] % range);
-			return res;
+			return resArr;
 		};
 	}
 
-	private int populate(T x, int[] res, int pos) {
-		final int N = Math.min(_hashes.length, res.length - pos);
-		for (int i = 0; i < N; i++) {
-			res[pos] = _hashes[i].hash(x);
-			pos++;
+	public int bytesIn(int range) {
+		if (range <= 0xFF)
+			return 1;
+		if (range <= 0xFFFF)
+			return 2;
+		return 4;
+	}
+
+	private void populate(T x, int sz, ByteBuffer res) {
+		for (int i = 0; i < _hashes.length; i++) {
+			if (sz <= res.position())
+				break;
+			_hashes[i].hash(x, res);
 		}
-		return pos;
+	}
+
+	private ByteBuffer populate(T x, int sz) {
+		final ByteBuffer res = ByteBuffer.allocate(32 + sz);
+		populate(x, sz, res);
+		for (int round = 1; res.position() < sz; round++)
+			populate(_salting.apply(x, round), sz, res);
+
+		res.rewind();
+		return res;
 	}
 }
