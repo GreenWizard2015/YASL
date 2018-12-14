@@ -1,7 +1,10 @@
 package YASL.Collectors;
 
-import java.util.Comparator;
-import java.util.PriorityQueue;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import YASL.CEstimatedItems;
@@ -9,19 +12,15 @@ import YASL.CEstimationFor;
 import YASL.IEstimationCollector;
 
 public class KTopCollector<T> implements IEstimationCollector<T> {
-	private final long															_K;
-	private final PriorityQueue<CEstimationFor<T>>	_queue;
-	private long																		_min	= 0L;
+	private final int												_K;
+	private long														_min	= 0L;
+	private final List<CEstimationFor<T>>		_items;
+	private final Map<T, CEstimationFor<T>>	_byValue;
 
-	public KTopCollector(long K) {
+	public KTopCollector(int K) {
 		this._K = K;
-		_queue = new PriorityQueue<>(new Comparator<CEstimationFor<T>>() {
-
-			@Override
-			public int compare(CEstimationFor<T> o1, CEstimationFor<T> o2) {
-				return o2.compareTo(o1);
-			}
-		});
+		_items = new ArrayList<>();
+		_byValue = new HashMap<>();
 	}
 
 	@Override
@@ -29,26 +28,34 @@ public class KTopCollector<T> implements IEstimationCollector<T> {
 		if (cnt < _min)
 			return;
 
-		CEstimationFor<T> est = new CEstimationFor<>(item, cnt);
-		if (_queue.contains(est)) {
-			_queue.remove(est);
+		CEstimationFor<T> est = _byValue.get(item);
+		if (null != est) {
+			_items.remove(Collections.binarySearch(_items, est));
 		}
-		_queue.offer(est);
 
-		while (_K < _queue.size())
-			_queue.poll();
+		est = new CEstimationFor<T>(item, cnt);
+		_byValue.put(item, est);
+		int ind = Collections.binarySearch(_items, est);
+		_items.add(-(ind + 1), est);
 
-		if (_queue.size() == _K)
-			_min = _queue.peek().Count;
+		if ((_K * 1.1) < _items.size())
+			fitK();
+	}
+
+	private void fitK() {
+		while (_K < _items.size()) {
+			_byValue.remove(_items.remove(_K).Item);
+		}
+
+		if (_items.size() == _K)
+			_min = _items.get(_K - 1).Count;
 	}
 
 	@Override
 	public CEstimatedItems<T> collect() {
+		fitK();
 		return new CEstimatedItems<>( //
-		    _queue.stream() //
-		        .map(e -> new CEstimationFor<>(e.Item, e.Count)) //
-		        .sorted() //
-		        .collect(Collectors.toList()) //
+		    _items.stream().collect(Collectors.toList()) //
 		);
 	}
 }
