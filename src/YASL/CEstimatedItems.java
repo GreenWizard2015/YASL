@@ -1,11 +1,12 @@
 package YASL;
 
-import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
-public class CEstimatedItems<T> {
-	private final Collection<CEstimationFor<T>> _estimation;
+public class CEstimatedItems<T> implements Iterable<CEstimationFor<T>> {
+	private final List<CEstimationFor<T>> _estimation;
 
-	public CEstimatedItems(Collection<CEstimationFor<T>> estimation) {
+	public CEstimatedItems(List<CEstimationFor<T>> estimation) {
 		this._estimation = estimation;
 	}
 
@@ -19,5 +20,14 @@ public class CEstimatedItems<T> {
 			del = ", ";
 		}
 		return res.toString();
+	}
+
+	public CEstimationFor<T> get(int i) {
+		return _estimation.get(i);
+	}
+
+	@Override
+	public Iterator<CEstimationFor<T>> iterator() {
+		return _estimation.iterator();
 	}
 }

@@ -5,7 +5,7 @@ import YASL.Hashing.IHasher;
 import YASL.Hashing.IHashingGenerator;
 
 public class CCMCounter<T> implements IItemsCounter<T> {
-	private final IHasher<T>		_bucketsProvider;
+	private final IHasher<T>	_bucketsProvider;
 	protected final long[][]	_sketch;
 
 	public CCMCounter( //

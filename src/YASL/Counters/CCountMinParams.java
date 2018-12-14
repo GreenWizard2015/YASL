@@ -12,4 +12,9 @@ public class CCountMinParams {
 		// width = (int) Math.ceil(2 * Math.E / err);
 		// depth = (int) Math.ceil(-Math.log(1 - confidence) / Math.log(2));
 	}
+
+	public CCountMinParams(int width, int depth) {
+		this.width = width;
+		this.depth = depth;
+	}
 }
