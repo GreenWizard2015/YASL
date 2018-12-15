@@ -3,10 +3,6 @@ package YASL.Hashing;
 import java.nio.ByteBuffer;
 
 public class ChgCombined<T> implements IHashingGenerator<T> {
-	public interface ISalter<T> {
-		public T apply(T value, int round);
-	}
-
 	private final IHashingAlgorithm<T>[]	_hashes;
 	private final ISalter<T>							_salting;
 
