@@ -36,15 +36,15 @@ public class KTopCollector<T> implements IEstimationCollector<T> {
 		est = new CEstimationFor<T>(item, cnt);
 		_byValue.put(item, est);
 		int ind = Collections.binarySearch(_items, est);
-		_items.add(-(ind + 1), est);
+		_items.add(-ind - 1, est);
 
-		if ((_K * 1.1) < _items.size())
+		if ((_K * 1.5) < _items.size())
 			fitK();
 	}
 
 	private void fitK() {
 		while (_K < _items.size()) {
-			_byValue.remove(_items.remove(_K).Item);
+			_byValue.remove(_items.remove(_items.size() - 1).Item);
 		}
 
 		if (_items.size() == _K)
