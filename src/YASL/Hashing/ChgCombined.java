@@ -64,7 +64,7 @@ public class ChgCombined<T> implements IHashingGenerator<T> {
 	}
 
 	private ByteBuffer populate(T x, int sz) {
-		final ByteBuffer res = ByteBuffer.allocate(32 + sz);
+		final ByteBuffer res = ByteBuffer.allocate(256 + sz);
 		populate(x, sz, res);
 		for (int round = 1; res.position() < sz; round++)
 			populate(_salting.apply(x, round), sz, res);
