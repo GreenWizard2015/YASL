@@ -1,5 +1,7 @@
 package YASL.Hashing;
 
+import java.nio.charset.StandardCharsets;
+
 public class ChgString implements IHashingGenerator<String> {
 	private final IHashingGenerator<byte[]> _gen;
 
@@ -16,6 +18,9 @@ public class ChgString implements IHashingGenerator<String> {
 		round %= src.length;
 		System.arraycopy(src, 0, res, round, src.length - round);
 		System.arraycopy(src, src.length - round, res, 0, round);
+		for (int i = 0; i < res.length; i++) {
+			res[i] = (byte) ((res[i] + i) & 0xFF);
+		}
 		return res;
 	}
 
@@ -23,7 +28,10 @@ public class ChgString implements IHashingGenerator<String> {
 	public IHasher<String> generate(int range, int levels) {
 		IHasher<byte[]> hashing = _gen.generate(range, levels);
 		return x -> {
-			return hashing.apply(x.getBytes());
+			while (x.length() < 16) {
+				x += x;
+			}
+			return hashing.apply(x.getBytes(StandardCharsets.UTF_8));
 		};
 	}
 
