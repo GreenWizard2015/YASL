@@ -1,5 +1,6 @@
 package YASL.Collectors;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -7,6 +8,7 @@ import java.util.stream.Collectors;
 import YASL.CEstimatedItems;
 import YASL.CEstimationFor;
 import YASL.IEstimationCollector;
+import YASL.Streams.TypedOutputStream;
 
 public class CExactCollector<T> implements IEstimationCollector<T> {
 
@@ -25,5 +27,10 @@ public class CExactCollector<T> implements IEstimationCollector<T> {
 		        .sorted() //
 		        .collect(Collectors.toList()) //
 		);
+	}
+
+	@Override
+	public void store(TypedOutputStream<T> stream) throws IOException {
+    throw new UnsupportedOperationException();
 	}
 }

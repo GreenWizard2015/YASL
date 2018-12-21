@@ -1,5 +1,6 @@
 package YASL.Collectors;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.stream.Collectors;
 import YASL.CEstimatedItems;
 import YASL.CEstimationFor;
 import YASL.IEstimationCollector;
+import YASL.Streams.TypedOutputStream;
 
 public class KTopCollector<T> implements IEstimationCollector<T> {
 	private final int												_K;
@@ -17,10 +19,18 @@ public class KTopCollector<T> implements IEstimationCollector<T> {
 	private final List<CEstimationFor<T>>		_items;
 	private final Map<T, CEstimationFor<T>>	_byValue;
 
+	public KTopCollector( //
+	    int _K, //
+	    List<CEstimationFor<T>> _items, //
+	    Map<T, CEstimationFor<T>> _byValue //
+	) {
+		this._K = _K;
+		this._items = _items;
+		this._byValue = _byValue;
+	}
+
 	public KTopCollector(int K) {
-		this._K = K;
-		_items = new ArrayList<>();
-		_byValue = new HashMap<>();
+		this(K, new ArrayList<>(), new HashMap<>());
 	}
 
 	@Override
@@ -57,5 +67,16 @@ public class KTopCollector<T> implements IEstimationCollector<T> {
 		return new CEstimatedItems<>( //
 		    _items.stream().collect(Collectors.toList()) //
 		);
+	}
+
+	@Override
+	public void store(TypedOutputStream<T> stream) throws IOException {
+		fitK();
+
+		stream.writeInt(_items.size());
+		for (CEstimationFor<T> item : _items) {
+			stream.writeType(item.Item);
+			stream.writeLong(item.Count);
+		}
 	}
 }

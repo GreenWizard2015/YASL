@@ -4,9 +4,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import YASL.CEstimator;
-import YASL.CExactCounter;
 import YASL.IEstimator;
 import YASL.Collectors.CExactCollector;
+import YASL.Counters.CExactCounter;
 
 public class Test_Estimator {
 	@Test

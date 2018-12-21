@@ -5,10 +5,10 @@ import java.util.Random;
 import org.junit.Assert;
 import org.junit.Test;
 
-import YASL.CExactCounter;
 import YASL.IItemsCounter;
 import YASL.Counters.CCMCounter;
 import YASL.Counters.CCountMinParams;
+import YASL.Counters.CExactCounter;
 import YASL.Hashing.ChgBasic;
 
 public class Test_CountMinCounter {

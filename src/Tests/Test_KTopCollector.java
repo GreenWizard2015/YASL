@@ -1,10 +1,16 @@
 package Tests;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import YASL.IEstimationCollector;
 import YASL.Collectors.KTopCollector;
+import YASL.Collectors.StoredKTop;
+import YASL.Streams.CtisInteger;
+import YASL.Streams.CtosInteger;
 
 public class Test_KTopCollector {
 
@@ -32,6 +38,28 @@ public class Test_KTopCollector {
 		Assert.assertEquals( //
 		    "5 -> 5, 4 -> 4, 3 -> 4", //
 		    collector.collect().toString() //
+		);
+	}
+
+	@Test
+	public void loading() throws Exception {
+		final IEstimationCollector<Integer> collectorA = new KTopCollector<>(3);
+		collectorA.put(3, 4);
+		collectorA.put(2, 3);
+
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		collectorA.store(new CtosInteger(stream));
+
+		final IEstimationCollector<Integer> collectorB = (new StoredKTop<Integer>( //
+		    new CtisInteger( //
+		        new ByteArrayInputStream(stream.toByteArray()) //
+				), //
+		    3 //
+		)).load();
+
+		Assert.assertEquals( //
+		    collectorA.collect().toString(), //
+		    collectorB.collect().toString() //
 		);
 	}
 }

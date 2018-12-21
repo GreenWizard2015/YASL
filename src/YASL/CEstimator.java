@@ -1,5 +1,9 @@
 package YASL;
 
+import java.io.IOException;
+
+import YASL.Streams.TypedOutputStream;
+
 public class CEstimator<T> implements IEstimator<T> {
 	private final IItemsCounter<T> _counter;
 	private final IEstimationCollector<T> _collector;
@@ -21,5 +25,11 @@ public class CEstimator<T> implements IEstimator<T> {
 	@Override
 	public CEstimatedItems<T> estimate() {
 		return _collector.collect();
+	}
+
+	@Override
+	public void store(TypedOutputStream<T> stream) throws IOException {
+		_counter.store(stream);
+		_collector.store(stream);
 	}
 }

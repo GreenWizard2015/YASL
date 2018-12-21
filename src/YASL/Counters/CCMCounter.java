@@ -1,19 +1,31 @@
 package YASL.Counters;
 
+import java.io.IOException;
+
 import YASL.IItemsCounter;
+import YASL.Counters.Tables.CcsIntTable;
+import YASL.Counters.Tables.CcsTable;
 import YASL.Hashing.IHasher;
 import YASL.Hashing.IHashingGenerator;
+import YASL.Streams.TypedOutputStream;
 
 public class CCMCounter<T> implements IItemsCounter<T> {
 	private final IHasher<T>	_bucketsProvider;
-	protected final long[][]	_sketch;
+	private final CcsTable		_sketch;
 
 	public CCMCounter( //
-	    int width, int buckets, //
+	    CcsTable sketch, //
 	    IHasher<T> bucketsProvider//
 	) {
 		_bucketsProvider = bucketsProvider;
-		_sketch = new long[width][buckets];
+		_sketch = sketch;
+	}
+
+	public CCMCounter( //
+	    int width, int buckets, //
+	    IHasher<T> bucketsProvider //
+	) {
+		this(new CcsIntTable(width, buckets), bucketsProvider);
 	}
 
 	public CCMCounter( //
@@ -34,18 +46,15 @@ public class CCMCounter<T> implements IItemsCounter<T> {
 		return count;
 	}
 
-	public void update(T item, long count) {
-		update(_bucketsProvider.apply(item), count);
-	}
-
 	protected void update(int[] positions, long count) {
 		for (int i = 0; i < positions.length; i++) {
 			final int pos = positions[i];
-			if (_sketch[pos][i] < count)
-				_sketch[pos][i] = count;
+			if (_sketch.read(pos, i) < count)
+				_sketch.put(pos, i, count);
 		}
 	}
 
+	@Override
 	public long count(T item) {
 		return count(_bucketsProvider.apply(item));
 	}
@@ -53,9 +62,14 @@ public class CCMCounter<T> implements IItemsCounter<T> {
 	private long count(int[] positions) {
 		long res = Long.MAX_VALUE;
 		for (int i = 0; i < positions.length; i++) {
-			final long cnt = _sketch[positions[i]][i];
+			final long cnt = _sketch.read(positions[i], i);
 			res = (cnt < res) ? cnt : res;
 		}
 		return res;
+	}
+
+	@Override
+	public void store(TypedOutputStream<T> stream) throws IOException {
+		_sketch.store(stream);
 	}
 }
