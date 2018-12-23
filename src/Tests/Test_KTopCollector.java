@@ -51,11 +51,12 @@ public class Test_KTopCollector {
 		collectorA.store(new CtosInteger(stream));
 
 		final IEstimationCollector<Integer> collectorB = (new StoredKTop<Integer>( //
+		    3 //
+		)).load( //
 		    new CtisInteger( //
 		        new ByteArrayInputStream(stream.toByteArray()) //
-				), //
-		    3 //
-		)).load();
+				) //
+		);
 
 		Assert.assertEquals( //
 		    collectorA.collect().toString(), //

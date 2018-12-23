@@ -25,11 +25,12 @@ public class Test_csTable {
 		tableA.store(new DataOutputStream(stream));
 
 		CcsTable tableB = (new CcsStoredTable( //
+		    2, 1 //
+		)).asInt( //
 		    new DataInputStream( //
 		        new ByteArrayInputStream(stream.toByteArray()) //
-				), //
-		    2, 1 //
-		)).asInt();
+				) //
+		);
 
 		Assert.assertEquals(tableA.read(0, 0), tableB.read(0, 0));
 		Assert.assertEquals(tableA.read(1, 0), tableB.read(1, 0));
