@@ -166,7 +166,7 @@ public class Test_CFixedMinHeap {
 	}
 }
 
-class CItem extends CprSimple<String> implements Comparable<CItem> {
+class CItem extends CprSimple<String> {
 	public CItem(String value, int priority) {
 		super(value, priority);
 	}
@@ -178,13 +178,5 @@ class CItem extends CprSimple<String> implements Comparable<CItem> {
 	@Override
 	public String toString() {
 		return value.toString() + " " + Priority();
-	}
-
-	@Override
-	public int compareTo(CItem o) {
-		final int diff = o._priority - _priority;
-		if (0 != diff)
-			return diff;
-		return o.value.compareTo(value);
 	}
 }
