@@ -1,6 +1,7 @@
-package YASL.Collectors.Heap;
+package YASL.MinHeap;
 
 public interface IPrioritizedItem<T> {
-	public int Priority();
+	public long Priority();
+
 	public T Value();
 }

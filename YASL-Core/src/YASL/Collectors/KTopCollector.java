@@ -7,12 +7,12 @@ import java.util.stream.Collectors;
 import YASL.CEstimatedItems;
 import YASL.CEstimationFor;
 import YASL.IEstimationCollector;
-import YASL.Collectors.Heap.CFixedMinHeap;
-import YASL.Collectors.Heap.CprSimple;
+import YASL.MinHeap.CFixedMinHeap;
+import YASL.MinHeap.CpiSimple;
 import YASL.Streams.TypedOutputStream;
 
 public class KTopCollector<T> implements IEstimationCollector<T> {
-	private static class CTopItem<T> extends CprSimple<T> {
+	private static class CTopItem<T> extends CpiSimple<T> {
 		public CTopItem(T value, long priority) {
 			super(value, (int) priority);
 		}

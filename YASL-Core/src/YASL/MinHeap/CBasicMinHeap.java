@@ -1,4 +1,4 @@
-package YASL.Collectors.Heap;
+package YASL.MinHeap;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -6,17 +6,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CFixedMinHeap<T extends IPrioritizedItem<TKey>, TKey> {
+public class CBasicMinHeap<T extends IPrioritizedItem<TKey>, TKey> implements IMinHeap<T, TKey> {
 	private final CbhItem<T>[]					_items;
 	private final Map<TKey, CbhItem<T>>	_byValue;
 	private int													_count	= 0;
 
 	@SuppressWarnings("unchecked")
-	public CFixedMinHeap(int size) {
+	public CBasicMinHeap(int size) {
 		_items = (CbhItem[]) Array.newInstance(CbhItem.class, size);
 		_byValue = new HashMap<>();
 	}
 
+	@Override
 	public T poll() {
 		final T res = lowest();
 		_count--;
@@ -28,23 +29,20 @@ public class CFixedMinHeap<T extends IPrioritizedItem<TKey>, TKey> {
 		return res;
 	}
 
+	@Override
 	public T lowest() {
 		return _items[0].Item;
 	}
 
+	@Override
 	public void update(TKey key) {
 		final CbhItem<T> item = _byValue.get(key);
 		bubbleUp(item);
 		bubbleDown(item);
 	}
 
+	@Override
 	public void add(T item) {
-		if (_count == _items.length) {
-			if (item.Priority() < lowest().Priority())
-				return;
-			poll();
-		}
-
 		final CbhItem<T> node = new CbhItem<T>(item, _count);
 		_items[_count] = node;
 		_byValue.put(item.Value(), node);
@@ -52,11 +50,13 @@ public class CFixedMinHeap<T extends IPrioritizedItem<TKey>, TKey> {
 		_count++;
 	}
 
+	@Override
 	public T get(TKey key) {
 		final CbhItem<T> item = _byValue.get(key);
 		return (null == item) ? null : item.Item;
 	}
 
+	@Override
 	public String print() {
 		final StringBuilder res = new StringBuilder();
 		String sepp = "";
@@ -108,10 +108,11 @@ public class CFixedMinHeap<T extends IPrioritizedItem<TKey>, TKey> {
 	}
 
 	private boolean isBigger(CbhItem<T> first, CbhItem<T> second) {
-		final int diff = first.Item.Priority() - second.Item.Priority();
+		final long diff = first.Item.Priority() - second.Item.Priority();
 		return 0 < diff;
 	}
 
+	@Override
 	public List<T> items() {
 		List<T> res = new ArrayList<>(_count);
 		for (int i = 0; i < _count; i++) {
@@ -121,14 +122,8 @@ public class CFixedMinHeap<T extends IPrioritizedItem<TKey>, TKey> {
 		return res;
 	}
 
-
-	private static class CbhItem<T> {
-		public final T	Item;
-		public int			Index;
-
-		public CbhItem(T item, int index) {
-			Item = item;
-			Index = index;
-		}
+	@Override
+	public boolean isFull() {
+		return _count == _items.length;
 	}
 }
