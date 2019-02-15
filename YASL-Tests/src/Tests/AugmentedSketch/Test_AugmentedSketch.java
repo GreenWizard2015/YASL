@@ -8,6 +8,7 @@ import Tests.TestHelper.ITestLogger;
 import YASL.IEstimator;
 import YASL.IItemsCounter;
 import YASL.AugmentedSketch.CAugmentedSketch;
+import YASL.AugmentedSketch.IAugmentedSketch;
 
 public class Test_AugmentedSketch {
 	@Test
@@ -109,5 +110,17 @@ public class Test_AugmentedSketch {
 
 		Assert.assertEquals(1 + 5, est.count(123));
 		Assert.assertEquals(1 + 8, est.count(321));
+	}
+
+	@Test
+	public void PIF_IfHeapNotFull() {
+		final IAugmentedSketch<Integer> est = //
+		    new CAugmentedSketch<Integer>( //
+		        new CasTestHeap(1), //
+		        new CasTestCounter() //
+				);
+
+		est.putIfFrequent(123, 1);
+		Assert.assertEquals(1, est.count(123));
 	}
 }

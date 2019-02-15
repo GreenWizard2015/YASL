@@ -34,11 +34,6 @@ public class CAugmentedSketch<T> implements IAugmentedSketch<T> {
 	}
 
 	private long putToCounter(T item, long count) {
-		if (!_heap.isFull()) {
-			_heap.add(new CasItem<T>(item, count, 0));
-			return count;
-		}
-
 		final long cnt = _counter.put(item, count);
 		if (_heap.lowest().Priority() < cnt) {
 			final CasItem<T> oldMin = _heap.poll();
@@ -57,6 +52,12 @@ public class CAugmentedSketch<T> implements IAugmentedSketch<T> {
 			_heap.update(item);
 			return ratted.Priority();
 		}
+
+		if (!_heap.isFull()) {
+			_heap.add(new CasItem<T>(item, count, 0));
+			return count;
+		}
+
 		return 0;
 	}
 
