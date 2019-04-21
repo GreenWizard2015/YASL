@@ -24,23 +24,28 @@ public class ChgCombined<T> implements IHashingGenerator<T> {
 
 	@Override
 	public IHasher<T> generate(int range, int levels) {
+		final int bytesPerItem = bytesIn(range);
 		return x -> {
-			final int bytesPerItem = bytesIn(range);
 			final ByteBuffer res = populate(x, levels * bytesPerItem);
 			final int[] resArr = new int[levels];
 			for (int i = 0; i < levels; i++) {
 				switch (bytesPerItem) {
 					case 4:
-						resArr[i] = Math.abs(res.getInt() % range);
+						final long value = res.getInt() & 0xFFFFFFFFl;
+						final long lRange = range & 0xFFFFFFFFl;
+						resArr[i] = (int) (value % lRange);
 						break;
 
 					case 2:
-						resArr[i] = Math.abs(res.getShort() % range);
+						resArr[i] = (res.getShort() & 0xFFFF) % range;
 						break;
 
 					case 1:
-						resArr[i] = Math.abs(res.get() % range);
+						resArr[i] = (res.get() & 0xFF) % range;
 						break;
+
+					default:
+						throw new RuntimeException("Unsupported hash size");
 				}
 			}
 			return resArr;
@@ -48,6 +53,9 @@ public class ChgCombined<T> implements IHashingGenerator<T> {
 	}
 
 	public int bytesIn(int range) {
+		if (range < 0) // unsigned
+			return 4;
+
 		if (range <= 0xFF)
 			return 1;
 		if (range <= 0xFFFF)

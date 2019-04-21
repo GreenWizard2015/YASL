@@ -26,7 +26,7 @@ public class Test_hgCombined {
 		IHasher<Integer> gen = new ChgCombined<Integer>( //
 		    (x, r) -> x, // salt
 		    (x, r) -> r.put((byte) 21), //
-		    (x, r) -> r.put((byte) -24) //
+		    (x, r) -> r.put((byte) 24) //
 		).generate(5, 2);
 
 		Assert.assertArrayEquals( //
@@ -70,6 +70,7 @@ public class Test_hgCombined {
 
 		Assert.assertEquals(4, gen.bytesIn(0xFFFF00));
 		Assert.assertEquals(4, gen.bytesIn(0x7FFFFF00));
+		Assert.assertEquals(4, gen.bytesIn(0xFFFFFF00));
 	}
 
 	@Test
@@ -94,6 +95,39 @@ public class Test_hgCombined {
 
 		Assert.assertArrayEquals( //
 		    new int[] { 1, 2 }, gen.apply(0x00010002) //
+		);
+	}
+
+	@Test
+	public void asUnsignedByte() {
+		IHasher<Integer> gen = new ChgCombined<Integer>( //
+		    new CIntegerHashing<>(x -> 0xF0F0F0F0) //
+		).generate(0xFF, 1);
+
+		Assert.assertArrayEquals( //
+		    new int[] { 0xF0 }, gen.apply(0) //
+		);
+	}
+
+	@Test
+	public void asUnsignedWord() {
+		IHasher<Integer> gen = new ChgCombined<Integer>( //
+		    new CIntegerHashing<>(x -> 0xFF00FF00) //
+		).generate(0xFFFF, 1);
+
+		Assert.assertArrayEquals( //
+		    new int[] { 0xFF00 }, gen.apply(0) //
+		);
+	}
+
+	@Test
+	public void asUnsignedInt() {
+		IHasher<Integer> gen = new ChgCombined<Integer>( //
+		    new CIntegerHashing<>(x -> 0xFF00000F) //
+		).generate(0xFFFFFFFF, 1);
+
+		Assert.assertEquals( //
+		    0xFF00000F, gen.apply(3)[0] //
 		);
 	}
 }
